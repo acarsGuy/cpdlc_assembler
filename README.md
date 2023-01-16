@@ -5,15 +5,15 @@ See example files...
 
 
 ## Short "API-Doc"
-- ´cpdlc_parse_la.py´: assembles CPDLC Msgs from libacars
-- ´cpdlc_parse_vdl.py´: assembles CPDLC Msgs from dumpvdl2
+- `cpdlc_parse_la.py`: assembles CPDLC Msgs from libacars
+- `cpdlc_parse_vdl.py`: assembles CPDLC Msgs from dumpvdl2
 
-Each contains a ´parse´ function, returning dict. Keys:
-- ´msgs´: list of contained and assembled messages
-- ´dir´: 'DOWNLINK/UPLINK/DOWNLINK PDUS/UPLINK PDUS',
-- 'msg_id': message id,
--  'logical_ack': 'required/notRequired',   **VDL2 ONLY**
--  'timestamp': CPDLC timestamp
+Each contains a `parse` function, returning dict. Keys:
+- `msgs`: list of contained and assembled messages,
+- `dir`: `DOWNLINK`/`UPLINK`/`DOWNLINK PDUS`/`UPLINK PDUS`,
+- `msg_id`: message id,
+- `logical_ack`: `required`/`notRequired`,   **VDL2 ONLY**
+- `timestamp`: CPDLC timestamp
 
 
 ## Message support

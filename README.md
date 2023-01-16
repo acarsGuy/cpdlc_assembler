@@ -1,5 +1,5 @@
-# cpdlc_parser
-A parser for CPDLC messages from dumpvdl2 / libacars. Assembles CPDLC messages decoded by dumpvdl2 or libacars.
+# cpdlc_assembler
+A assembler for CPDLC messages from dumpvdl2 / libacars. Assembles CPDLC messages decoded by dumpvdl2 or libacars.
 
 See example files...
 

@@ -422,7 +422,10 @@ def la_rte_info(d):
 	#"placeBearingDistance"
 	#"trackDetail"
 
-
+def la_versionnumber(d):
+	vnum = d['ver_num']
+	return f"Version: {vnum}"
+	
 def la_assemble(msg,data):
 
 	placeholder_count = msg.count('[')
@@ -515,6 +518,9 @@ def la_assemble(msg,data):
 		rep = la_routeclearance(dataroot)
 		msg = msg.replace('[routeclearance]',rep)
 
+	if '[versionnumber]' in msg:
+		rep = la_versionnumber(dataroot)
+		msg = msg.replace('[versionnumber]',rep)
 
 	return msg.replace('\00', '')
 

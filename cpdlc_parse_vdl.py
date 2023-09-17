@@ -1,6 +1,53 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+def vdl_offset(d):
+	if 'distance_specified' in d and d['distance_specified']['choice'] == 'distanceSpecifiedNm':
+		val  = int(d['distance_specified']['data']['offset']['val'])
+		unit = d['distance_specified']['data']['offset']['unit']
+		return f"{val}{unit}"
+
+	return "[_offset]"	
+
+def vdl_direction(d):
+	return d['direction'].upper()
+
+def vdl_unitname(d):
+	if 'facility_name' in d['unit_name']:
+		return d['unit_name']['facility_name']
+
+	if 'facility_designation' in d['unit_name']:
+		return d['unit_name']['facility_designation']
+
+	return '[_unitname]'
+
+def vdl_frequency(d):
+	if d['frequency']['choice'] == 'frequencyhf':
+		val  = d['frequency']['data']['hf']['val']
+		unit = d['frequency']['data']['hf']['unit']
+
+		return f'{val}{unit}'
+
+	if d['frequency']['choice'] == 'frequencyvhf':
+		val  = d['frequency']['data']['vhf']['val']
+		unit = d['frequency']['data']['vhf']['unit']
+
+		return f'{val}{unit}'
+
+	if d['frequency']['choice'] == 'frequencyuhf':
+		val  = d['frequency']['data']['uhf']['val']
+		unit = d['frequency']['data']['uhf']['unit']
+
+		return f'{val}{unit}'
+
+	return '[_frequency]'
+
+def vdl_facility(d):
+	if d['facility']['choice'] == 'facilityDesignation':
+		return d['facility']['data']['facility_designation']
+
+	return '[_facility]'
+
 def vdl_speed(d):
 	if d['speed']['choice'] == 'speedMach':
 		mach = d['speed']['data']['mach']['val']
@@ -11,8 +58,13 @@ def vdl_speed(d):
 def vdl_level(d):
 	if d['level']['choice'] == 'singleLevel' and d['level']['data']['level_type']['choice'] == 'levelFlightLevel':
 		fl = d['level']['data']['level_type']['data']['flight_level']
-		return f'F{fl}'
-		
+		return f'FL{fl}'
+
+	if d['level']['choice'] == 'singleLevel' and d['level']['data']['level_type']['choice'] == 'levelFeet':
+		val  = int(d['level']['data']['level_type']['data']['flight_level']['val'])
+		unit = d['level']['data']['level_type']['data']['flight_level']['unit']
+		return f"{val}{unit}"
+
 	return '[_level]'
 
 def vdl_position(d):
@@ -44,7 +96,6 @@ def vdl_error(d):
 	return f"ERROR: {ei}"
 
 def vdl_assemble(msg,data):
-
 	placeholder_count = msg.count('[') + msg.count('FREE TEXT') + msg.count('ERROR')
 	if placeholder_count == 0:
 		return msg
@@ -54,6 +105,25 @@ def vdl_assemble(msg,data):
 		firstkey = list(data.keys())[0]
 		dataroot = data[firstkey]
 
+	if '[offset]' in msg:
+		rep = vdl_offset(dataroot)
+		msg = msg.replace('[offset]',rep)
+
+	if '[direction]' in msg:
+		rep = vdl_direction(dataroot)
+		msg = msg.replace('[direction]',rep)
+
+	if '[frequency]' in msg:
+		rep = vdl_frequency(dataroot)
+		msg = msg.replace('[frequency]',rep)
+
+	if '[unitname]' in msg:
+		rep = vdl_unitname(dataroot)
+		msg = msg.replace('[unitname]',rep)
+
+	if '[facility]' in msg:
+		rep = vdl_facility(dataroot)
+		msg = msg.replace('[facility]',rep)
 
 	if '[speed]' in msg:
 		rep = vdl_speed(dataroot)
@@ -119,7 +189,7 @@ def parse(cpdlcroot):
 		pkey = 'protected_aircraft_pdus'
 		ret['dir'] = 'DOWNLINK PDUS'
 		return handle_pdus(cpdlcroot[pkey],ret)
-	elif 'protected_aircraft_pdus' in cpdlcroot:
+	elif 'protected_ground_pdus' in cpdlcroot:
 		pkey = 'protected_ground_pdus'
 		ret['dir'] = 'UPLINK PDUS'
 		return handle_pdus(cpdlcroot[pkey],ret)

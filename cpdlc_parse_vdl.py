@@ -53,19 +53,39 @@ def vdl_speed(d):
 		mach = d['speed']['data']['mach']['val']
 		return f"MACH {mach}"
 
+	if d['speed']['choice'] == 'speedIndicated':
+		val  = int(d['speed']['data']['indicated_airspeed']['val'])
+		unit = d['speed']['data']['indicated_airspeed']['unit']
+		return f"{val}{unit}"
+
+	
 	return '[_speed]'
 
 def vdl_level(d):
-	if d['level']['choice'] == 'singleLevel' and d['level']['data']['level_type']['choice'] == 'levelFlightLevel':
-		fl = d['level']['data']['level_type']['data']['flight_level']
-		return f'FL{fl}'
+	if d['level']['choice'] == 'singleLevel':
+		return vdl_level2(d['level']['data'])
 
-	if d['level']['choice'] == 'singleLevel' and d['level']['data']['level_type']['choice'] == 'levelFeet':
-		val  = int(d['level']['data']['level_type']['data']['flight_level']['val'])
-		unit = d['level']['data']['level_type']['data']['flight_level']['unit']
-		return f"{val}{unit}"
+	if d['level']['choice'] == 'blockLevel':
+		levels_conv = []
+		for level in d['level']['data']['block_level']:
+			levels_conv.append(vdl_level2(level))
+
+		return " - ".join(levels_conv)
+
 
 	return '[_level]'
+
+def vdl_level2(d):
+	if d['level_type']['choice'] == 'levelFlightLevel':
+		fl = d['level_type']['data']['flight_level']
+		return f'FL{fl}'
+
+	if d['level_type']['choice'] == 'levelFeet':
+		val  = int(d['level_type']['data']['flight_level']['val'])
+		unit = d['level_type']['data']['flight_level']['unit']
+		return f"{val}{unit}"
+
+	return '[_level2]'
 
 def vdl_position(d):
 	if d['position']['choice'] == 'fixName':
